@@ -1,0 +1,20 @@
+{
+  "name": "v0.2",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon --ext js,hbs,svg"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "express": "^4.19.2",
+    "hbs": "^4.2.0",
+    "morgan": "^1.10.0",
+    "nodemon": "^3.1.4"
+  }
+}
