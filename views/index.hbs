@@ -4,15 +4,80 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="menu.css">
     <link rel="stylesheet" href="nav.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 </head>
 <body>
-    <div  class="container-fluid">
-        {{> nav}}
-        {{> menu_tablas}}
-    </div>
+    {{> nav}}
+    {{> menu_tablas}}
+
+    <script>
+        function generateColumnInputs() {
+            const numColumns = document.getElementById('numColumns').value;
+            const columnNamesDiv = document.getElementById('columnNames');
+            columnNamesDiv.innerHTML = ''; // Limpiar entradas previas
+
+            for (let i = 1; i <= numColumns; i++) {
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.placeholder = `Nombre de la columna ${i}`;
+                input.id = `columnName${i}`;
+                columnNamesDiv.appendChild(input);
+            }
+        }
+
+        function createTable() {
+            const numColumns = document.getElementById('numColumns').value;
+            const tableContainer = document.getElementById('tableContainer');
+            tableContainer.innerHTML = ''; // Limpiar tabla previa
+
+            const table = document.createElement('table');
+            table.id = 'dynamicTable'; // Asignar un ID para referencia
+            const headerRow = document.createElement('tr');
+
+            for (let i = 1; i <= numColumns; i++) {
+                const th = document.createElement('th');
+                const columnName = document.getElementById(`columnName${i}`).value || `Columna ${i}`;
+                th.textContent = columnName;
+                headerRow.appendChild(th);
+            }
+
+            table.appendChild(headerRow);
+            tableContainer.appendChild(table);
+
+            generateRowInputs(numColumns);
+            document.getElementById('rowData').style.display = 'block';
+        }
+
+        function generateRowInputs(numColumns) {
+            const rowInputsDiv = document.getElementById('rowInputs');
+            rowInputsDiv.innerHTML = ''; // Limpiar entradas previas
+
+            for (let i = 1; i <= numColumns; i++) {
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.placeholder = `Dato para Columna ${i}`;
+                input.id = `rowData${i}`;
+                rowInputsDiv.appendChild(input);
+            }
+        }
+
+        function addRow() {
+            const table = document.getElementById('dynamicTable');
+            const newRow = document.createElement('tr');
+            const numColumns = document.getElementById('numColumns').value;
+
+            for (let i = 1; i <= numColumns; i++) {
+                const td = document.createElement('td');
+                const cellData = document.getElementById(`rowData${i}`).value || '';
+                td.textContent = cellData;
+                newRow.appendChild(td);
+            }
+
+            table.appendChild(newRow);
+        }
+    </script>
 
     <script>
         // variables para agarrar la primera fila tr fila | th nombre

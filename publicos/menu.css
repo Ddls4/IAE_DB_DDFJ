@@ -1,0 +1,95 @@
+*{
+    padding: 0%;
+    margin: 0%;
+    box-sizing: border-box; 
+}
+.main{
+    width: 100%;
+    height: 100vh;
+    background-color: rgba(31,31,31,255);
+}
+.menu{
+    height: 90vh;
+    background-color: #232523;
+}
+.titulo{
+    color: #ddd;
+    font-weight: bold;
+    width: 100%;
+    height: 10%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#config-form{
+    width: 100%;
+}
+.generador{
+    width: 100%;
+    height: 45%;
+    display: flex;
+    flex-wrap: wrap;
+}
+.generador button{
+    width: 100%;
+    height: 30px;
+    text-align: center;
+    border-radius: 10%/95%;
+}
+.generador_nombre{
+    color: #ddd;
+    width: 100%;
+    height: 25%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    font-weight: bold;  
+}
+.generador_nombre input{
+    width: 15%;
+    border-radius: 10%/80%;
+    text-align: center;
+}
+
+.agregador{
+    width: 100%;
+    height: 45%;
+    color: aliceblue;
+}
+.agregador h3{
+    color: aliceblue;
+}
+
+
+
+
+
+
+
+
+
+#Tabla-columnsa{
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    width: 100%;
+}
+table {
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    width: 100%;
+    border: 1px solid rgb(255, 255, 255);
+    text-align: center;
+}
+
+th,
+td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+    color: #ddd;
+}
+
+th {
+    background-color: #4CAF50;
+    color: #fff;    
+}

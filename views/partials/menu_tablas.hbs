@@ -1,37 +1,33 @@
-        <div class="row">
-            <aside class="sidebar border-right col-3 menu"> 
-                <h3>Configurador</h3>
-                <h4>Columnas y Filas</h4>
-                <form id="config-form">
-                    <label>Cantidad de columnas: </label>
-                    <input type="number" id="num-columnas" name="num-columnas" min="1" max="10" value="3">
-                    <button type="button" id="generar-columnas"> Seleccione nombre</button>
+<div class="main">
+    <div class="row">
+        <aside class="sidebar border-right col-3 menu">
+            <div class="titulo">
+                <h3>Configuracion</h3>
+            </div>
+            <div class="generador">
+                <div class="generador_nombre">
+                    <form id="columnForm">
+                        <label for="numColumns">Número de Columnas:</label>
+                        <input type="number" id="numColumns" name="numColumns" min="1" max="10" value="3">
+                        <button type="button" onclick="generateColumnInputs()">Crear Nombres</button>
+                    </form>
+                </div>
 
-                    <div id="nombres-columnas">
-                        <!-- Aquí se generarán los inputs para los nombres de las columnas -->
-                    </div>
+                <div id="columnNames"></div>
+                <button type="button" onclick="createTable()">Crear Tabla</button>
 
-                    <button type="button" id="aplicar-nombres">Crear</button>
-                </form>
-
-
-                <h2>Agregar Información a las Columnas</h2>
-                <form id="fila-form">
-                    <label for="columna-seleccionada">Seleccionar columna:</label>
-                    <select id="columna-seleccionada">
-                        <!-- Opciones dinámicas -->
-                    </select>
-                    <label for="contenido-fila">Contenido de la fila:</label>
-                    <input type="text" id="contenido-fila" placeholder="Ingrese el contenido">
-                    <button type="button" id="agregar-fila">Agregar Fila</button>
-                </form>
-            </aside>
-
-            <main class="col-9">     
-                <table >
-                    <tr id="Tabla-columnas">
-
-                    </tr>
-                </table>
-            </main>
-        </div>
+            </div>
+            <div class="agregador">
+                <div id="rowData" style="display: block;">
+                    <h2>Agregar Información a la Tabla</h2>
+                    <div id="rowInputs"><input type="text" placeholder="Dato para Columna 1" id="rowData1"><input type="text" placeholder="Dato para Columna 2" id="rowData2"><input type="text" placeholder="Dato para Columna 3" id="rowData3"></div>
+                    <button type="button" onclick="addRow()">Agregar Fila</button>
+                </div>
+            </div> 
+    
+        </aside>
+        <main class="col-8">
+            <div id="tableContainer"></div>
+        </main>
+    </div>
+</div>
