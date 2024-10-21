@@ -88,54 +88,6 @@ function addRow() {
     }
 }
 
-// Función para cargar la tabla desde el localStorage
-function loadTable() {
-    // Obtener el usuario actual desde localStorage
-    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-
-    if (currentUser) {
-        const tableData = JSON.parse(localStorage.getItem(`${currentUser.username}_table`));
-
-        if (tableData) {
-            const tableHead = document.getElementById('tableHead');
-            const tableBody = document.getElementById('tableBody');
-            const rowInputs = document.getElementById('rowInputs');
-            const addRowSection = document.getElementById('addRowSection');
-
-            tableHead.innerHTML = '';
-            tableBody.innerHTML = '';
-            rowInputs.innerHTML = '';
-
-            const row = document.createElement('tr');
-            tableData.columns.forEach((columnName, index) => {
-                const th = document.createElement('th');
-                th.textContent = columnName;
-                row.appendChild(th);
-
-                const input = document.createElement('input');
-                input.type = 'text';
-                input.id = `rowInput${index}`;
-                rowInputs.appendChild(input);
-            });
-            tableHead.appendChild(row);
-
-            tableData.rows.forEach(rowData => {
-                const row = document.createElement('tr');
-                rowData.forEach(cellData => {
-                    const td = document.createElement('td');
-                    td.textContent = cellData;
-                    row.appendChild(td);
-                });
-                tableBody.appendChild(row);
-            });
-
-            addRowSection.style.display = 'block';
-        }
-    } else {
-        console.log('No hay un usuario logueado para cargar la tabla.');
-    }
-}
-
 // Función para borrar la tabla y el localStorage
 function clearTable() {
     localStorage.removeItem('columnNames');
@@ -216,41 +168,48 @@ let loginUser=()=> {
 
 // Cargar la tabla asociada al usuario desde localStorage
 function loadTable() {
-            const tableData = JSON.parse(localStorage.getItem(`${currentUser.username}_table`));
+    // Obtener el usuario actual desde localStorage
+    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
 
-            if (tableData) {
-                const tableHead = document.getElementById('tableHead');
-                const tableBody = document.getElementById('tableBody');
-                const rowInputs = document.getElementById('rowInputs');
-                const addRowSection = document.getElementById('addRowSection');
+    if (currentUser) {
+        const tableData = JSON.parse(localStorage.getItem(`${currentUser.username}_table`));
 
-                tableHead.innerHTML = '';
-                tableBody.innerHTML = '';
-                rowInputs.innerHTML = '';
+        if (tableData) {
+            const tableHead = document.getElementById('tableHead');
+            const tableBody = document.getElementById('tableBody');
+            const rowInputs = document.getElementById('rowInputs');
+            const addRowSection = document.getElementById('addRowSection');
 
+            tableHead.innerHTML = '';
+            tableBody.innerHTML = '';
+            rowInputs.innerHTML = '';
+
+            const row = document.createElement('tr');
+            tableData.columns.forEach((columnName, index) => {
+                const th = document.createElement('th');
+                th.textContent = columnName;
+                row.appendChild(th);
+
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.id = `rowInput${index}`;
+                rowInputs.appendChild(input);
+            });
+            tableHead.appendChild(row);
+
+            tableData.rows.forEach(rowData => {
                 const row = document.createElement('tr');
-                tableData.columns.forEach((columnName, index) => {
-                    const th = document.createElement('th');
-                    th.textContent = columnName;
-                    row.appendChild(th);
-
-                    const input = document.createElement('input');
-                    input.type = 'text';
-                    input.id = `rowInput${index}`;
-                    rowInputs.appendChild(input);
+                rowData.forEach(cellData => {
+                    const td = document.createElement('td');
+                    td.textContent = cellData;
+                    row.appendChild(td);
                 });
-                tableHead.appendChild(row);
+                tableBody.appendChild(row);
+            });
 
-                tableData.rows.forEach(rowData => {
-                    const row = document.createElement('tr');
-                    rowData.forEach(cellData => {
-                        const td = document.createElement('td');
-                        td.textContent = cellData;
-                        row.appendChild(td);
-                    });
-                    tableBody.appendChild(row);
-                });
-
-                addRowSection.style.display = 'block';
-            }
+            addRowSection.style.display = 'block';
         }
+    } else {
+        console.log('No hay un usuario logueado para cargar la tabla.');
+    }
+}
