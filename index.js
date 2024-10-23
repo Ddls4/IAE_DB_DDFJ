@@ -1,55 +1,47 @@
 import { servidor } from "./config.js"
+import { guardar_db_T } from "./back_funciones/funciones_back.js"
+import { guardar_db } from "./back_funciones/funciones_back.js"
 
 servidor.get("/", (req,res)=>{
     res.status(200).render("index.hbs")
     
 })
 
-
-import fs from 'fs';
-const filePath = './usuarios.json';
-
-// Leer usuarios desde el archivo
-function leerUsuarios() {
-    if (fs.existsSync(filePath)) {
-        const data = fs.readFileSync(filePath);
-        return JSON.parse(data);
-    }
-    return [];
-}
-
-// Guardar usuarios en el archivo
-function guardarUsuarios(users) {
-    fs.writeFileSync(filePath, JSON.stringify(users, null, 2));
-}
-
-// Ruta de inicio de sesión
-servidor.post("/", async (req, res) => {
-    let { username, password } = req.body;
-    const users = leerUsuarios();
-
-    const user = users.find(u => u.username === username && u.password === password);
-
-    if (user) {
-        console.log(`Usuario: ${username}, Contraseña: ${password}`);
-        res.json({ success: true });
-    } else {
-        res.json({ success: false, message: 'Credenciales incorrectas' });
-    }
-});
-
 // Ruta para registrar un nuevo usuario
 servidor.post("/register", async (req, res) => {
     let { username, password, role } = req.body;
-    let users = leerUsuarios();
+    console.log(`Usuario: ${username}, Contraseña: ${password}, role:${role}`);
+    guardar_db(username, password, role);
+    res.status(200).send("Datos recibidos y guardados");
+});
 
-    const existingUser = users.find(u => u.username === username);
-    if (existingUser) {
-        return res.json({ success: false, message: 'El usuario ya existe' });
-    }
 
-    users.push({ username, password, role });
-    guardarUsuarios(users);
-    console.log(`Usuario registrado: ${username}`);
-    res.json({ success: true, message: 'Registro exitoso' });
+// Ruta para agregar o actualizar una tabla asociada a un usuario
+servidor.post('/usuario/:username/tabla', (req, res) => {
+    const username = req.params.username;
+    const tabla = req.body.tabla;  // La tabla en formato JSON
+    console.log(`Usuario: ${username}, tabla: ${tabla}`);
+    guardar_db_T(username, tabla);
+});
+
+
+// Esto esta para que cuando no usemos localstorage
+servidor.get('/usuario/:username/tabla', (req, res) => {
+    const username = req.params.username;
+
+    connection.query('SELECT tabla_asociada FROM usuarios WHERE username = ?', [username], (err, results) => {
+        if (err) {
+            console.error('Error al obtener tabla asociada:', err);
+            return res.status(500).json({ success: false, message: 'Error al obtener la tabla asociada' });
+        }
+
+        if (results.length === 0) {
+            return res.status(404).json({ success: false, message: 'Usuario no encontrado' });
+        }
+
+        res.json({
+            success: true,
+            data: JSON.parse(results[0].tabla_asociada) // Convertir el string JSON a objeto
+        });
+    });
 });

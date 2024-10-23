@@ -1,3 +1,4 @@
+
 // Función para generar los inputs para ingresar los nombres de las columnas
 function generateColumnInputs() {
     const columnCount = document.getElementById('columnCount').value;
@@ -83,9 +84,31 @@ function addRow() {
         const tableData = JSON.parse(localStorage.getItem(`${currentUser.username}_table`));
         tableData.rows.push(rowData);
         localStorage.setItem(`${currentUser.username}_table`, JSON.stringify(tableData));
+        
+        // Enviar la tabla actualizada al servidor con fetch
+        fetch(`/usuario/${currentUser.username}/tabla`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ tabla: tableData })  // Enviar la tabla como JSON
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                console.log('Tabla actualizada en el servidor:', data);
+            } else {
+                console.error('Error al actualizar la tabla en el servidor:', data.message);
+            }
+        })
+        .catch(error => console.error('Error en la petición fetch:', error));
+    
     } else {
         console.log('No hay un usuario logueado.');
     }
+
+
+
 }
 
 // Función para borrar la tabla y el localStorage
@@ -99,27 +122,48 @@ function clearTable() {
     document.getElementById('columnCount').value = '';
 }
 
-
-
 // Registrar un nuevo usuario
-function registerUser() {
+async function registerUser() {
     const username = document.getElementById('registerUsername').value;
     const password = document.getElementById('registerPassword').value;
     const role = document.getElementById('registerRole').value;
 
+    // Verificar si el usuario ya existe en localStorage
     let users = JSON.parse(localStorage.getItem('users')) || [];
-
     if (users.find(user => user.username === username)) {
         alert('El usuario ya existe.');
         return;
     }
 
-    users.push({ username, password, role });
+    // -----------------------------CryptoJS-------------------------
+    const hashedPassword = CryptoJS.SHA256(password).toString();
+
+    users.push({ username,  password:hashedPassword, role });
     localStorage.setItem('users', JSON.stringify(users));
 
-    alert('Registro exitoso. Ahora puedes iniciar sesión.');
-    document.getElementById('registerUsername').value = '';
-    document.getElementById('registerPassword').value = '';
+    // Enviar los datos del nuevo usuario al servidor usando fetch
+    fetch('/register', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            username: username,
+            password: hashedPassword,
+            role: role
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            alert('Registro exitoso. Ahora puedes iniciar sesión.');
+        } else {
+            alert(data.message || 'Hubo un error al registrar el usuario.');
+        }
+    })
+    .catch(error => {
+        console.error('Error en el registro:', error);
+    });
 }
 // Iniciar sesión
 let loginUser=()=> {
@@ -127,8 +171,8 @@ let loginUser=()=> {
     let password = document.querySelector('#loginPassword').value
     
     const users = JSON.parse(localStorage.getItem('users')) || [];
-
-    const user = users.find(user => user.username === username && user.password === password);
+    const hashedPassword = CryptoJS.SHA256(password).toString();
+    const user = users.find(user => user.username === username && user.password === hashedPassword);
 
     if (!user) {
         console.log('Usuario no encontrado o credenciales incorrectas');
@@ -142,28 +186,6 @@ let loginUser=()=> {
     } else {
         console.log('Usuario o contraseña incorrectos');
     }
-
-    fetch('/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            username: username,
-            password: password
-        }),
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.success) {
-            console.log('Inicio de sesión exitoso');
-            localStorage.setItem('currentUser', JSON.stringify(user)); // Guardar usuario en localStorage
-            // Aquí puedes redirigir al usuario o cargar su sesión
-        } else {
-            console.log('Credenciales incorrectas desde el servidor');
-        }
-    })
-    .catch(error => console.error('Error en la autenticación:', error));
 }
 
 // Cargar la tabla asociada al usuario desde localStorage
@@ -196,7 +218,6 @@ function loadTable() {
                 rowInputs.appendChild(input);
             });
             tableHead.appendChild(row);
-
             tableData.rows.forEach(rowData => {
                 const row = document.createElement('tr');
                 rowData.forEach(cellData => {

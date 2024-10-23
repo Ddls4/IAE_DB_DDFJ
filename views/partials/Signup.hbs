@@ -1,0 +1,27 @@
+  <!-- Modal Sign-up-->
+  <div class="modal fade" id="SignModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header" style="padding:35px 50px;">
+          <h4> Sign-up</h4>
+        </div>
+        <div class="modal-body" style="padding:40px 50px;">
+          <form role="form">
+            <div class="form-group">
+              <label for="loginUsername"> Username</label>
+              <input type="text" class="form-control" id="registerUsername" placeholder="Username">
+            </div>
+            <div class="form-group">
+              <label for="loginPassword"> Password</label>
+              <input type="password" class="form-control" id="registerPassword" placeholder="Enter password">
+            </div>
+              <select id="registerRole">
+                <option value="user">Usuario</option>
+                <option value="admin">Administrador</option>
+              </select>
+              <button type="submit" onclick="registerUser()" class="btn btn-success btn-block"> Login</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
