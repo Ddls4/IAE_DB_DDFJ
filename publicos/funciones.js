@@ -13,20 +13,16 @@ function generateColumnInputs() {
         columnNamesSection.appendChild(input);
     }
 }
-// Función para crear la tabla y guardar en localStorage
+// Crear encabezados de la tabla y guardar en localStorage
 function createTable() {
     const columnCount = document.getElementById('columnCount').value;
     const tableHead = document.getElementById('tableHead');
     const tableBody = document.getElementById('tableBody');
-    const addRowSection = document.getElementById('addRowSection');
     const rowInputs = document.getElementById('rowInputs');
-
-    // Limpiar el contenido anterior
     tableHead.innerHTML = '';
     tableBody.innerHTML = '';
     rowInputs.innerHTML = '';
 
-    // Crear encabezados de la tabla
     const row = document.createElement('tr');
     const columnNames = [];
     for (let i = 0; i < columnCount; i++) {
@@ -35,26 +31,18 @@ function createTable() {
         th.textContent = columnName || `Columna ${i + 1}`;
         row.appendChild(th);
         columnNames.push(columnName || `Columna ${i + 1}`);
-
         // Crear inputs para agregar filas
         const input = document.createElement('input');
         input.type = 'text';
         input.id = `rowInput${i}`;
         input.placeholder = `Dato ${i}`;
-        rowInputs.appendChild(input);
+        rowInputs.style.display = 'block';
     }
-    tableHead.appendChild(row);
-    addRowSection.style.display = 'block';
-
     // Obtener el usuario actual desde localStorage
     const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-
     if (currentUser) {
-        // Guardar la tabla en localStorage bajo el nombre del usuario
         const tableData = { columns: columnNames, rows: [] };
         localStorage.setItem(`${currentUser.username}_table`, JSON.stringify(tableData));
-    } else {
-        console.log('No hay un usuario logueado.');
     }
 }
 
@@ -72,26 +60,33 @@ function addRow() {
         row.appendChild(td);
         rowData.push(value || '');
     }
+    // Crear botones de editar y eliminar
+    const createButton = (text, onClick) => {
+        const button = document.createElement('button');
+        button.textContent = text;
+        button.onclick = onClick;
+        return button;
+    };
+    const editButton = createButton('Editar', () => editRow(row, rowData));
+    const deleteButton = createButton('Eliminar', () => deleteRow(row, rowData));
 
+    const actionTd = document.createElement('td');
+    actionTd.append(editButton, deleteButton);
+    row.appendChild(actionTd);
     tableBody.appendChild(row);
 
-    // Actualizar localStorage con la nueva fila
-
-
     const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-
     if (currentUser) {
         const tableData = JSON.parse(localStorage.getItem(`${currentUser.username}_table`));
         tableData.rows.push(rowData);
         localStorage.setItem(`${currentUser.username}_table`, JSON.stringify(tableData));
         
-        // Enviar la tabla actualizada al servidor con fetch
         fetch(`/usuario/${currentUser.username}/tabla`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ tabla: tableData })  // Enviar la tabla como JSON
+            body: JSON.stringify({ tabla: tableData }) 
         })
         .then(response => response.json())
         .then(data => {
@@ -106,9 +101,6 @@ function addRow() {
     } else {
         console.log('No hay un usuario logueado.');
     }
-
-
-
 }
 
 // Función para borrar la tabla y el localStorage
@@ -126,22 +118,17 @@ function clearTable() {
 async function registerUser() {
     const username = document.getElementById('registerUsername').value;
     const password = document.getElementById('registerPassword').value;
-    const role = document.getElementById('registerRole').value;
-
     // Verificar si el usuario ya existe en localStorage
     let users = JSON.parse(localStorage.getItem('users')) || [];
     if (users.find(user => user.username === username)) {
         alert('El usuario ya existe.');
         return;
     }
+    const hashedPassword = CryptoJS.SHA256(password).toString();  //CryptoJS
 
-    // -----------------------------CryptoJS-------------------------
-    const hashedPassword = CryptoJS.SHA256(password).toString();
-
-    users.push({ username,  password:hashedPassword, role });
+    users.push({ username,  password:hashedPassword });
     localStorage.setItem('users', JSON.stringify(users));
 
-    // Enviar los datos del nuevo usuario al servidor usando fetch
     fetch('/register', {
         method: 'POST',
         headers: {
@@ -150,7 +137,6 @@ async function registerUser() {
         body: JSON.stringify({
             username: username,
             password: hashedPassword,
-            role: role
         })
     })
     .then(res => res.json())
@@ -165,6 +151,7 @@ async function registerUser() {
         console.error('Error en el registro:', error);
     });
 }
+
 // Iniciar sesión
 let loginUser=()=> {
     let username = document.querySelector('#loginUsername').value
@@ -232,5 +219,80 @@ function loadTable() {
         }
     } else {
         console.log('No hay un usuario logueado para cargar la tabla.');
+    }
+}
+
+// Función para editar una fila
+function editRow(row, rowData) {
+    const inputs = Array.from(row.getElementsByTagName('td'));
+    inputs.forEach((td, index) => {
+        if (index < rowData.length) {
+            const input = document.createElement('input');
+            input.value = td.textContent;
+            td.textContent = '';
+            td.appendChild(input);
+        }
+    });
+    
+    // Cambiar el botón de editar por un botón de guardar
+    const saveButton = document.createElement('button');
+    saveButton.textContent = 'Guardar';
+    saveButton.onclick = function() {
+        saveRow(row, rowData);
+    };
+    
+    row.lastChild.replaceChild(saveButton, row.lastChild.firstChild);
+}
+
+// Función para guardar los cambios en una fila
+function saveRow(row, rowData) {
+    const inputs = Array.from(row.getElementsByTagName('input'));
+    inputs.forEach((input, index) => {
+        rowData[index] = input.value;
+        const td = row.cells[index];
+        td.textContent = input.value;
+    });
+
+    // Restaurar los botones de editar y eliminar
+    const editButton = document.createElement('button');
+    editButton.textContent = 'Editar';
+    editButton.onclick = function() {
+        editRow(row, rowData);
+    };
+
+    const deleteButton = document.createElement('button');
+    deleteButton.textContent = 'Eliminar';
+    deleteButton.onclick = function() {
+        deleteRow(row, rowData);
+    };
+
+    const actionTd = row.lastChild;
+    actionTd.innerHTML = '';  // Limpiar contenido anterior
+    actionTd.appendChild(editButton);
+    actionTd.appendChild(deleteButton);
+
+    // Actualizar localStorage aquí si es necesario
+}
+
+// Función para eliminar una fila
+function deleteRow(row, rowData) {
+    const tableBody = document.getElementById('tableBody');
+    tableBody.removeChild(row);
+
+    // Actualizar localStorage para eliminar la fila
+    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    if (currentUser) {
+        const tableData = JSON.parse(localStorage.getItem(`${currentUser.username}_table`));
+
+        // Encuentra el índice de la fila que quieres eliminar
+        const rowIndex = tableData.rows.findIndex(r => JSON.stringify(r) === JSON.stringify(rowData));
+        
+        // Si se encontró la fila, eliminarla
+        if (rowIndex !== -1) {
+            tableData.rows.splice(rowIndex, 1);
+            }
+        // Guardar la tabla actualizada en localStorage
+        localStorage.setItem(`${currentUser.username}_table`, JSON.stringify(tableData));
+
     }
 }
