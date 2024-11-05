@@ -1,16 +1,11 @@
 import mysql from "mysql2/promise";
 import {} from 'dotenv/config'
-
-const ip = process.env.S_IP;
-const usuario = process.env.S_USER;
-const db = process.env.S_DB;
-const cen = process.env.S_CEN;
 /*
 const conexion = await mysql.createConnection({
-    host: ip,
-    user: usuario,
-    database: db,
-    password: cen,
+    host: process.env.S_IP,
+    user: process.env.S_USER,
+    database: process.env.S_DB,
+    password: process.env.S_CEN,
 });
 */
 const guardar_db = async (username, password) => {

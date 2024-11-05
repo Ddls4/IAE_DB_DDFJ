@@ -36,8 +36,10 @@ function createTable() {
         input.type = 'text';
         input.id = `rowInput${i}`;
         input.placeholder = `Dato ${i}`;
-        rowInputs.style.display = 'block';
+        rowInputs.appendChild(input);
     }
+    tableHead.appendChild(row);
+    addRowSection.style.display = 'block';
     // Obtener el usuario actual desde localStorage
     const currentUser = JSON.parse(localStorage.getItem('currentUser'));
     if (currentUser) {
@@ -71,6 +73,7 @@ function addRow() {
     const deleteButton = createButton('Eliminar', () => deleteRow(row, rowData));
 
     const actionTd = document.createElement('td');
+    actionTd.style.width = '15%';
     actionTd.append(editButton, deleteButton);
     row.appendChild(actionTd);
     tableBody.appendChild(row);
@@ -103,16 +106,6 @@ function addRow() {
     }
 }
 
-// Función para borrar la tabla y el localStorage
-function clearTable() {
-    localStorage.removeItem('columnNames');
-    localStorage.removeItem('tableData');
-    document.getElementById('tableHead').innerHTML = '';
-    document.getElementById('tableBody').innerHTML = '';
-    document.getElementById('addRowSection').style.display = 'none';
-    document.getElementById('columnNamesSection').innerHTML = '';
-    document.getElementById('columnCount').value = '';
-}
 
 // Registrar un nuevo usuario
 async function registerUser() {
@@ -151,7 +144,6 @@ async function registerUser() {
         console.error('Error en el registro:', error);
     });
 }
-
 // Iniciar sesión
 let loginUser=()=> {
     let username = document.querySelector('#loginUsername').value
@@ -165,20 +157,19 @@ let loginUser=()=> {
         console.log('Usuario no encontrado o credenciales incorrectas');
         return;
     }
-
     if (user) {
-        // Guardar el usuario en localStorage
         localStorage.setItem('currentUser', JSON.stringify(user));
-        console.log('Inicio de sesión exitoso');
-    } else {
-        console.log('Usuario o contraseña incorrectos');
+    } 
+    if (user.username  === 'diego2') {
+        document.getElementById('adminSection').classList.remove('hidden');
     }
-}
 
+}
 // Cargar la tabla asociada al usuario desde localStorage
 function loadTable() {
     // Obtener el usuario actual desde localStorage
     const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    loadUsers();
 
     if (currentUser) {
         const tableData = JSON.parse(localStorage.getItem(`${currentUser.username}_table`));
@@ -243,8 +234,6 @@ function editRow(row, rowData) {
     
     row.lastChild.replaceChild(saveButton, row.lastChild.firstChild);
 }
-
-// Función para guardar los cambios en una fila
 function saveRow(row, rowData) {
     const inputs = Array.from(row.getElementsByTagName('input'));
     inputs.forEach((input, index) => {
@@ -273,8 +262,6 @@ function saveRow(row, rowData) {
 
     // Actualizar localStorage aquí si es necesario
 }
-
-// Función para eliminar una fila
 function deleteRow(row, rowData) {
     const tableBody = document.getElementById('tableBody');
     tableBody.removeChild(row);
@@ -295,4 +282,41 @@ function deleteRow(row, rowData) {
         localStorage.setItem(`${currentUser.username}_table`, JSON.stringify(tableData));
 
     }
+}
+
+
+// Función
+function loadUsers() {
+    let users = JSON.parse(localStorage.getItem('users')) || [];
+    const userList = document.getElementById('userList');
+    userList.innerHTML = '';
+
+    users.forEach(user => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${user.username}</td>
+            <td>${user.role}</td>
+            <td><button onclick="deleteUser('${user.username}')">Eliminar</button></td>
+        `;
+        userList.appendChild(row);
+    });
+}
+// Eliminar un usuario (solo admin)
+function deleteUser(username) {
+    let users = JSON.parse(localStorage.getItem('users')) || [];
+
+    users = users.filter(user => user.username !== username);
+    localStorage.setItem('users', JSON.stringify(users));
+
+    alert(`Usuario ${username} eliminado.`);
+    loadUsers(); // Recargar la lista de usuarios
+}
+function clearTable() {
+    localStorage.removeItem('columnNames');
+    localStorage.removeItem('tableData');
+    document.getElementById('tableHead').innerHTML = '';
+    document.getElementById('tableBody').innerHTML = '';
+    document.getElementById('addRowSection').style.display = 'none';
+    document.getElementById('columnNamesSection').innerHTML = '';
+    document.getElementById('columnCount').value = '';
 }

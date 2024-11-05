@@ -1,8 +1,4 @@
-*{
-    padding: 0%;
-    margin: 0%;
-    box-sizing: border-box; 
-}
+*{padding: 0%;margin: 0%;box-sizing: border-box;}
 .main{
     width: 100%;
     height: 100vh;
@@ -24,49 +20,55 @@
 #config-form{
     width: 100%;
 }
-.generador{
-    width: 100%;
-    height: 45%;
-    display: flex;
-    flex-wrap: wrap;
+
+
+.menu h2{
+    text-align: center;
+    color: #fff;
+    font-weight: bold;
 }
-.generador button{
-    width: 100%;
+.menu button{
+    width: 90%;
     height: 30px;
+    margin-left: 10px;
     text-align: center;
     border-radius: 10%/95%;
+    font-weight: bold;
 }
-.generador_nombre{
-    color: #ddd;
+
+.input-group {
     width: 100%;
-    height: 25%;
+    color: #fff;
     display: flex;
-    flex-wrap: wrap;
-    justify-content: space-evenly;
-    font-weight: bold;  
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
 }
-.generador_nombre input{
+.input-group input {
+    margin-left: 2px;
     width: 15%;
-    border-radius: 10%/80%;
     text-align: center;
 }
-
-.agregador{
+.generador_input{
     width: 100%;
-    height: 45%;
-    color: aliceblue;
+    display: flex;
+    flex-wrap: wrap;
+    margin-left: 10px;
 }
-.agregador h3{
-    color: aliceblue;
+.generador_input input{
+    width: 80%;
+    margin-left: 10px;
 }
-
-
-
-
-
-
-
-
+.rowInputs{
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    margin-left: 10px;
+}
+.rowInputs input{
+    width: 80%;
+    margin-left: 10px;
+}
 
 #Tabla-columnsa{
     border-collapse: collapse;
@@ -92,4 +94,8 @@ td {
 th {
     background-color: #4CAF50;
     color: #fff;    
+}
+
+.hidden {
+    display: none;
 }
