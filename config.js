@@ -16,9 +16,6 @@ servidor.set('view engine', 'hbs')
 hbs.registerPartials(`${__dirname}/views/partials`)
 servidor.listen(servidor.get("puerto"))
 
-servidor.use(express.urlencoded({ extended: true }));
-
-
 export {
     servidor
 }

@@ -25,7 +25,7 @@ servidor.post('/usuario/:username/tabla', (req, res) => {
 });
 
 
-// Esto esta para que cuando no usemos localstorage
+/* Esto esta para que cuando no usemos localstorage
 servidor.get('/usuario/:username/tabla', (req, res) => {
     const username = req.params.username;
 
@@ -44,4 +44,4 @@ servidor.get('/usuario/:username/tabla', (req, res) => {
             data: JSON.parse(results[0].tabla_asociada) // Convertir el string JSON a objeto
         });
     });
-});
+});*/

@@ -39,7 +39,7 @@ function createTable() {
         rowInputs.appendChild(input);
     }
     tableHead.appendChild(row);
-    addRowSection.style.display = 'block';
+    rowInputs.style.display = 'block';
     // Obtener el usuario actual desde localStorage
     const currentUser = JSON.parse(localStorage.getItem('currentUser'));
     if (currentUser) {
@@ -224,48 +224,52 @@ function editRow(row, rowData) {
             td.appendChild(input);
         }
     });
-    
     // Cambiar el botón de editar por un botón de guardar
     const saveButton = document.createElement('button');
     saveButton.textContent = 'Guardar';
     saveButton.onclick = function() {
         saveRow(row, rowData);
     };
-    
     row.lastChild.replaceChild(saveButton, row.lastChild.firstChild);
 }
 function saveRow(row, rowData) {
+    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    if (currentUser) {
+        const tableData = JSON.parse(localStorage.getItem(`${currentUser.username}_table`));
+        const rowIndex = tableData.rows.findIndex(r => JSON.stringify(r) === JSON.stringify(rowData));
+        if (rowIndex !== -1) {tableData.rows.splice(rowIndex, 1);}
+        localStorage.setItem(`${currentUser.username}_table`, JSON.stringify(tableData));
+    }
     const inputs = Array.from(row.getElementsByTagName('input'));
     inputs.forEach((input, index) => {
         rowData[index] = input.value;
         const td = row.cells[index];
         td.textContent = input.value;
     });
-
     // Restaurar los botones de editar y eliminar
     const editButton = document.createElement('button');
     editButton.textContent = 'Editar';
     editButton.onclick = function() {
         editRow(row, rowData);
     };
-
     const deleteButton = document.createElement('button');
     deleteButton.textContent = 'Eliminar';
     deleteButton.onclick = function() {
         deleteRow(row, rowData);
     };
-
     const actionTd = row.lastChild;
     actionTd.innerHTML = '';  // Limpiar contenido anterior
     actionTd.appendChild(editButton);
     actionTd.appendChild(deleteButton);
-
-    // Actualizar localStorage aquí si es necesario
+    if (currentUser) {
+        const tableData = JSON.parse(localStorage.getItem(`${currentUser.username}_table`));
+        tableData.rows.push(rowData);
+        localStorage.setItem(`${currentUser.username}_table`, JSON.stringify(tableData));
+    }
 }
 function deleteRow(row, rowData) {
     const tableBody = document.getElementById('tableBody');
     tableBody.removeChild(row);
-
     // Actualizar localStorage para eliminar la fila
     const currentUser = JSON.parse(localStorage.getItem('currentUser'));
     if (currentUser) {
