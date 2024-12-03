@@ -16,30 +16,19 @@
                     <div id="rowInputs" class="rowInputs"></div>
                     <button type="button" onclick="addRow()">Agregar Fila</button>
                     <button type="button" onclick="loadTable()">loadTable</button>
+                    <button type="button" onclick="saveTableData()">Guardar datos</button>
                 </div>
             </div> 
         </aside>
 
         <main class="col-8">
+            <h3 style="color: aliceblue;">
+                <span id="welcomeMessage"></span>
+            </h3>
             <table id="dataTable">
                 <thead id="tableHead"></thead>
                 <tbody id="tableBody"></tbody>
             </table>
-            <!-- Sección del Administrador -->
-            <div id="adminSection" class="hidden">
-                <h2 style="color: aliceblue;">Gestión de Usuarios</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Usuario</th>
-                            <th>Rol</th>
-                            <th>Acción</th>
-                        </tr>
-                    </thead>
-                    <tbody id="userList"></tbody>
-                </table>
-            </div>
         </main>
-
     </div>
 </div>

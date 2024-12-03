@@ -1,47 +1,41 @@
 import { servidor } from "./config.js"
-import { guardar_db_T } from "./back_funciones/funciones_back.js"
-import { guardar_db } from "./back_funciones/funciones_back.js"
-
+import { login } from "./back_funciones/funciones_back.js"
+import { registrar } from "./back_funciones/funciones_back.js"
+import { usuario } from "./back_funciones/funciones_back.js"
+import { save_table } from "./back_funciones/funciones_back.js"
+import { load_table } from "./back_funciones/funciones_back.js"
 servidor.get("/", (req,res)=>{
     res.status(200).render("index.hbs")
-    
 })
+servidor.get("/login", (req, res) => {
+    res.render("login.hbs");
+});
+servidor.get("/register", (req, res) => {
+    res.render("Signup.hbs");
+});
 
-// Ruta para registrar un nuevo usuario
+
+servidor.get('/user', (req, res) => {
+    usuario(req, res);
+});
+// Rutas POST
 servidor.post("/register", async (req, res) => {
-    let { username, password, role } = req.body;
-    console.log(`Usuario: ${username}, Contraseña: ${password}, role:${role}`);
-    guardar_db(username, password, role);
-    res.status(200).send("Datos recibidos y guardados");
+    const { username, password } = req.body;
+    registrar(username, password, res);
+});
+servidor.post("/login", (req, res) => {
+    const { username, password } = req.body;
+    console.log("logenando....")
+    login(username, password, res, req);
 });
 
-
-// Ruta para agregar o actualizar una tabla asociada a un usuario
-servidor.post('/usuario/:username/tabla', (req, res) => {
-    const username = req.params.username;
-    const tabla = req.body.tabla;  // La tabla en formato JSON
-    console.log(`Usuario: ${username}, tabla: ${tabla}`);
-    guardar_db_T(username, tabla);
+// RUTAS PARA TABLAS
+servidor.post('/save-table', (req, res) => {
+    const tableData = req.body;
+    const userId = req.session.userId; 
+    save_table(tableData, userId, req, res)
 });
-
-
-/* Esto esta para que cuando no usemos localstorage
-servidor.get('/usuario/:username/tabla', (req, res) => {
-    const username = req.params.username;
-
-    connection.query('SELECT tabla_asociada FROM usuarios WHERE username = ?', [username], (err, results) => {
-        if (err) {
-            console.error('Error al obtener tabla asociada:', err);
-            return res.status(500).json({ success: false, message: 'Error al obtener la tabla asociada' });
-        }
-
-        if (results.length === 0) {
-            return res.status(404).json({ success: false, message: 'Usuario no encontrado' });
-        }
-
-        res.json({
-            success: true,
-            data: JSON.parse(results[0].tabla_asociada) // Convertir el string JSON a objeto
-        });
-    });
-});*/
+servidor.get('/load-table', (req, res) => {
+    const userId = req.session.userId;
+    load_table(userId, req, res)
+});

@@ -1,4 +1,5 @@
 import express from "express"
+import session from "express-session";
 import morgan from "morgan"
 import hbs from "hbs"
 import { fileURLToPath } from "url"
@@ -15,6 +16,14 @@ servidor.use(express.static(`${__dirname}/publicos`))
 servidor.set('view engine', 'hbs')
 hbs.registerPartials(`${__dirname}/views/partials`)
 servidor.listen(servidor.get("puerto"))
+
+// Session
+servidor.use(express.urlencoded({ extended: true }));
+servidor.use(session({
+    secret: 'secret-key',
+    resave: false,
+    saveUninitialized: true,
+}));
 
 export {
     servidor

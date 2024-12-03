@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/nav.css">
+</head>
+<body class="pagina">
+    {{> nav}}
+    <div class="login"> 
+        <form id="loginForm">
+            <h1>Login</h1>
+            <input type="text" name="username" placeholder="Usuario">
+            <input type="password" name="password" placeholder="Contraseña">
+            <button class="boton_login" type="submit" onclick="enviar()">Enviar</button>
+        </form>
+        <p id="message"></p>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const response = await fetch('/login', {
+                method: 'POST',
+                body: JSON.stringify(Object.fromEntries(formData)),
+                headers: { 'Content-Type': 'application/json' },
+            });
+            const data = await response.json();
+            document.getElementById('message').textContent = data.message;
+            if (response.ok) window.location = '/';
+        });
+    </script>
+
+</body>
+</html>
